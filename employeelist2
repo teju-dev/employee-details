@@ -1,0 +1,95 @@
+import React from "react";
+import PropTypes from "prop-types";
+//import { Link } from "react-router-dom";
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-balham.css';
+//import {Redirect} from "react-router-dom";
+
+const EmployeeList = ({ employee, onDeleteClick }) => {
+
+  const columnDefs = [
+    {
+      headerName: 'ID', field: 'id', editable: true,
+      cellRenderer: function (params) {
+        return '<a href="http://localhost:3000/employees/' + params.value + '" target="_params">' + params.value + '</a>'
+      }
+    },
+    {
+      headerName: 'First Name', field: 'firstName', editable: true
+    },
+    { headerName: 'Last Name', field: 'lastName', editable: true },
+    { headerName: 'Email', field: 'email', editable: true },
+    { headerName: 'States', field: 'statesName', editable: true }
+  ];
+
+  const gridOptions = {
+    conlumnDefs: columnDefs,
+    rowSelection: 'single',
+    onRowSelected: RowSelected,
+    suppressRowClickSelection: true,
+    editType: "fullRow",
+    autoGroupColumnDef: {
+      headerName: "First NAme",
+      field: "firstName",
+      width: 200,
+      cellRenderer: "agGroupCellRenderer",
+      cellRendererParams: { checkbox: true }
+    }
+  }
+  const rowSelection = true;
+  const rowData = [];
+
+
+
+  function RowSelected(event) {
+    console.log(event);
+    // if(event.node.isSelected()){
+    //   console.log("selected");
+    // } else {
+    //   event.node.setSelected(true);
+    //   console.log("unselected");
+    // }
+
+  }
+
+  employee.forEach(employees => {
+    rowData.push({
+      firstName: employees.firstName,
+      lastName: employees.lastName,
+      email: employees.email,
+      statesName: employees.statesName,
+      id: employees.id
+    })
+  });
+  function onGridReady(params) {
+    console.log(params);
+  }
+  return (
+    <div className="ag-theme-balham" style={{ height: '300px', width: '1000px' }}>
+      <button onClick={() => onDeleteClick(rowSelection)}>Delete</button>
+
+      <AgGridReact
+        columnDefs={columnDefs}
+        rowData={rowData}
+        rowSelection={gridOptions.rowSelection}
+        rowSelected={RowSelected(event)}
+        // onSelectionChanged={RowSelected.bind(this)}
+        onGridReady={onGridReady}
+        enableSorting="true"
+        enableFilter="true"
+        suppressRowClickSelection={true}
+        editType={gridOptions.editType}
+
+      >
+      </AgGridReact>
+    </div>
+
+  );
+}
+EmployeeList.propTypes = {
+  employee: PropTypes.array.isRequired,
+  onDeleteClick: PropTypes.func.isRequired
+};
+
+export default EmployeeList;
